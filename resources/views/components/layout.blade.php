@@ -12,6 +12,13 @@
 <div class="container">
     <h1>{{ $title }}</h1>
 
+    {{-- verifica se mensagemSucesso existe, caso exista mostra na tela --}}
+    @isset($mensagemSucesso)
+    <div class="alert alert-success">
+        {{$mensagemSucesso}}
+    </div>
+    @endisset
+
     {{-- Ao falhar na validação da request, o laravel cria mensagens de erros na session
          que podem ser acessadas atraves dessa variavel $errors --}}
     @if ($errors->any())
