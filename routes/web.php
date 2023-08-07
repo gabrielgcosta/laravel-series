@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\EpisodesController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SeasonsController;
 use App\Http\Controllers\SeriesController;
+use App\Http\Middleware\Autenticador;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,9 +18,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/*
+O middleware é um interceptador de requisições e respostas. Com um middleware nós podemos
+interceptar a requisição antes de chegar ao controller ou a resposta depois dela ser retornada pelo controller.
+*/
 Route::get('/', function () {
     return to_route('series.index');
-});
+})->middleware(Autenticador::class);
 
 //define todas as rotas para series com base 
 Route::resource('/series', SeriesController::class)
@@ -28,6 +34,7 @@ Route::get('/series/{series}/seasons', [SeasonsController::class, 'index'])->nam
 
 Route::get('/seasons/{season}/episodes/', [EpisodesController::class, 'index'])->name('episodes.index');
 Route::post('/seasons/{season}/episodes/', [EpisodesController::class, 'update'])->name('episodes.update');
+Route::get('/login',[LoginController::class, 'index'])->name('login');
 
 /*
 //Cria um grupo de rotas que será controlada pelo mesmo controlador, dessa forma não se faz necessário
