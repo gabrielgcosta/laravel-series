@@ -39,14 +39,14 @@ class SeriesController extends Controller
         $series = Serie::create($request->all());
 
         //rodando um for para criar as temporadas das series
-        for($i=0; $i<=$request->seasonsQty; $i++){
+        for($i=1; $i<=$request->seasonsQty; $i++){
             //é possível chamar o metodo seasons da model que faz a relação entre as tabelas
             //e utilizar o create para que seja criada uma season na serie
             $season = $series->seasons()->create([
                 'number' => $i
             ]);
             //Da mesma forma é necessário rodar um for para criar os episódios em cada temporada
-            for($j=0; $j<=$request->episodesPerSeason; $j++){
+            for($j=1; $j<=$request->episodesPerSeason; $j++){
                 //Essa forma de gerar a criação do episódio, onde é chamado o método create, e então
                 //informado quais os campos a serem preenchidos, é chamado de mass assignment, e por isso
                 //é necessário que, na model, esse campo seja definido como fillable

@@ -8,8 +8,8 @@ use App\Models\Serie;
 class SeasonsController extends Controller
 {
     public function index(Serie $series){
-        //Essa forma de acessar as seasons da série é através de uma colection do eloquent
-        $seasons = $series->seasons;
-        return $series;
+        //Da forma indicada abaixo, é feito a busca das séries, já com seus episódios
+        $seasons = $series->seasons()->with('episodes')->get();
+        return view('seasons.index')->with('seasons', $seasons)->with('series', $series);
     }
 }
