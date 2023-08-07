@@ -7,9 +7,16 @@ use App\Models\Season;
 use App\Models\Serie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\SeriesRepository;
+use Illuminate\Config\Repository;
 
 class SeriesController extends Controller
 {
+    //O contrutor gera um objeto do tipo SeriesRepository como uma propriedade da classe, dessa forma
+    //se torna possível utilizar o objeto em toda a classe
+    public function __construct(private SeriesRepository $repository) {
+    }
+
     public function index(Request $request)
     {
         $series = Serie::all();
@@ -28,43 +35,7 @@ class SeriesController extends Controller
 
     public function store(SeriesFormRequest $request)
     {
-        //permite que sejam criadas regras de validação para a request
-        //caso as regras não sejam cumpridas, o usuário é redirecionado para a url anterior
-        /*$request->validate([
-            'nome' => ['required','min:3']
-        ]);*/
-
-        //permite a criação de linhas nas tabelas do banco, nesse caso, na tabela serie
-        //pegando tudo que veio na request
-        $series = Serie::create($request->all());
-
-        //rodando um for para criar as temporadas das series
-        for($i=1; $i<=$request->seasonsQty; $i++){
-            //é possível chamar o metodo seasons da model que faz a relação entre as tabelas
-            //e utilizar o create para que seja criada uma season na serie
-            $season = $series->seasons()->create([
-                'number' => $i
-            ]);
-            //Da mesma forma é necessário rodar um for para criar os episódios em cada temporada
-            for($j=1; $j<=$request->episodesPerSeason; $j++){
-                //Essa forma de gerar a criação do episódio, onde é chamado o método create, e então
-                //informado quais os campos a serem preenchidos, é chamado de mass assignment, e por isso
-                //é necessário que, na model, esse campo seja definido como fillable
-                $season->episodes()->create([
-                    'number' => $j
-                ]);
-            }
-
-            /*
-            A  forma realizada anteriormente não é a mais otimizada para realizara  inserção no banco,
-            pois gera muitas queries para que todas as informações sejam inseridas no banco.
-            Uma forma melhor seria gerar um array com todas as informações, e então usar a função
-            Episode::insert(*array com os elementos*), pois dessa forma iria diminuir a quantidade de queries
-            Foi deixado dessa forma pouco ótimizada apenas por questões de estudo, para que eu possa saber que 
-            existe essa forma
-            */
-
-        }
+        $series = $this->repository->add($request);
 
         //coloca uma informação na sessão, no caso uma mensagem de sucesso
         $request->session()->put('mensagem.sucesso', "Série '{$series->nome}' adicionada com sucesso!");
