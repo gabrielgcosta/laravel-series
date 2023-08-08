@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\Autenticador;
 use App\Http\Requests\SeriesFormRequest;
 use App\Models\Season;
 use App\Models\Serie;
@@ -15,6 +16,7 @@ class SeriesController extends Controller
     //O contrutor gera um objeto do tipo SeriesRepository como uma propriedade da classe, dessa forma
     //se torna possível utilizar o objeto em toda a classe
     public function __construct(private SeriesRepository $repository) {
+        $this->middleware(Autenticador::class)->except('index');
     }
 
     public function index(Request $request)

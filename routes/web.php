@@ -4,6 +4,7 @@ use App\Http\Controllers\EpisodesController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SeasonsController;
 use App\Http\Controllers\SeriesController;
+use App\Http\Controllers\UsersController;
 use App\Http\Middleware\Autenticador;
 use Illuminate\Support\Facades\Route;
 
@@ -22,19 +23,30 @@ use Illuminate\Support\Facades\Route;
 O middleware é um interceptador de requisições e respostas. Com um middleware nós podemos
 interceptar a requisição antes de chegar ao controller ou a resposta depois dela ser retornada pelo controller.
 */
-Route::get('/', function () {
-    return to_route('series.index');
-})->middleware(Autenticador::class);
-
 //define todas as rotas para series com base 
 Route::resource('/series', SeriesController::class)
     ->except(['show']);
-                             //indica o método que vai ser utilizado, nesse caso, método index
-Route::get('/series/{series}/seasons', [SeasonsController::class, 'index'])->name('seasons.index');
+//Para a rota acima, o middleware será aplicado diretamente no controller
 
-Route::get('/seasons/{season}/episodes/', [EpisodesController::class, 'index'])->name('episodes.index');
-Route::post('/seasons/{season}/episodes/', [EpisodesController::class, 'update'])->name('episodes.update');
+//Realizando o agrupamento de todas essas rotas, para que todas passem por esse middleware
+Route::middleware(Autenticador::class)->group(function(){
+    Route::get('/', function () {
+        return to_route('series.index');
+    });
+    
+                                 //indica o método que vai ser utilizado, nesse caso, método index
+    Route::get('/series/{series}/seasons', [SeasonsController::class, 'index'])->name('seasons.index');
+    
+    Route::get('/seasons/{season}/episodes/', [EpisodesController::class, 'index'])->name('episodes.index');
+    Route::post('/seasons/{season}/episodes/', [EpisodesController::class, 'update'])->name('episodes.update');
+});
+
 Route::get('/login',[LoginController::class, 'index'])->name('login');
+Route::post('/login',[LoginController::class, 'store'])->name('login.store');
+Route::get('/logout',[LoginController::class, 'destroy'])->name('logout');
+
+Route::get('/register',[UsersController::class, 'create'])->name('users.create');
+Route::post('/register',[UsersController::class, 'store'])->name('users.store');
 
 /*
 //Cria um grupo de rotas que será controlada pelo mesmo controlador, dessa forma não se faz necessário

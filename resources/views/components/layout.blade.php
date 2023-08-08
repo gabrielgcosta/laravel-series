@@ -9,6 +9,23 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+    <div class="container-fluid">
+        <a href="{{route('series.index')}}" class="navbar-brand">Home</a>
+        
+        {{-- Esse @auth verifica se existe um usuário logado, e caso tenha realiza
+             o seu conteudo --}}
+        @auth   
+        <a href="{{route('logout')}}">Sair</a>
+        @endauth
+        
+        {{-- @guest verifica se não tem usuário logado, sendo um convidado --}}
+        @guest
+        <a href="{{route('login')}}">Entrar</a>
+        @endguest
+    </div>
+</nav> 
 <div class="container">
     <h1>{{ $title }}</h1>
 
